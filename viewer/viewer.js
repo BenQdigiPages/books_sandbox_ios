@@ -44,7 +44,7 @@ Viewer.getBackgroundColor = function() {
 /// @[r, g, b] - page background color
 ///
 Viewer.setBackgroundColor = function(rgb) {
-
+    window.alert("Viewer.setBackgroundColor=" + rgb)
 }
 
 ///
@@ -71,7 +71,7 @@ Viewer.getLayoutMode = function() {
 /// @mode: string - either "single", "side_by_side" or "continuous"
 ///
 Viewer.setLayoutMode = function(mode) {
-
+    window.alert("Viewer.setLayoutMode=" + mode)
 }
 
 ///
@@ -91,7 +91,7 @@ Viewer.getCurrentPosition = function() {
 /// @link: string - target file link (relative to base url)
 ///
 Viewer.gotoLink = function(link) {
-
+    window.alert("Viewer.gotoLink=" + link)
 }
 
 ///
@@ -100,7 +100,7 @@ Viewer.gotoLink = function(link) {
 /// @cfi: string - epub cfi
 ///
 Viewer.gotoPosition = function(cfi) {
-
+    window.alert("Viewer.gotoPosition=" + cfi)
 }
 
 ///
@@ -117,7 +117,7 @@ Viewer.gotoPosition = function(cfi) {
 ///     null - to remove current bookmark
 ///
 Viewer.toggleBookmark = function(color) {
-
+    window.alert("Viewer.toggleBookmark=" + color)
 }
 
 ///
@@ -128,6 +128,6 @@ Viewer.toggleBookmark = function(color) {
 ///     or null to cancel search mode
 ///
 Viewer.searchText = function(keyword) {
-
+    window.alert("Viewer.searchText=" + keyword)
 }
 

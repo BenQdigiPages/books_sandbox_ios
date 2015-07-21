@@ -108,7 +108,7 @@ class ViewerBridge {
     
     enum LayoutMode : String {
         case Single = "single"
-        case SidebySide = "side_by_side"
+        case SideBySide = "side_by_side"
         case Continuous = "continuous"
     }
     
@@ -150,7 +150,7 @@ class ViewerBridge {
     /// @[r, g, b] - page background color
     ///
     func getBackgroundColor() -> UIColor? {
-        if let result = eval("Viewer.getBackgroundColor()") {
+        if let result = eval("JSON.stringify(Viewer.getBackgroundColor())") {
             do {
                 let json = try JsonArray(string: result)
                 let r = try json.getInt(0)
@@ -180,7 +180,7 @@ class ViewerBridge {
     /// @mode: string - either "single", "side_by_side" or "continuous"
     ///
     func getAvailableLayoutModes() -> [LayoutMode]? {
-        if let result = eval("Viewer.getAvailableLayoutModes()") {
+        if let result = eval("JSON.stringify(Viewer.getAvailableLayoutModes())") {
             var modes = [LayoutMode]()
             do {
                 let json = try JsonArray(string: result)
@@ -233,7 +233,7 @@ class ViewerBridge {
     /// @percentage: 0..100 - to represent reading progress
     ///
     func getCurrentPosition() -> (chapter: String, cfi: String, percentage: Int)? {
-        if let result = eval("Viewer.getCurrentPosition()") {
+        if let result = eval("JSON.stringify(Viewer.getCurrentPosition())") {
             do {
                 let json = try JsonArray(string: result)
                 let chapter = try json.getString(0)
@@ -310,8 +310,6 @@ class ViewerBridge {
     ///
     private func onChangeTitle(title: String) throws {
         self.scene.barTitle.text = title
-        debug("onChangeTitle",
-            "title=\(title)")
     }
 
     ///
@@ -320,8 +318,7 @@ class ViewerBridge {
     /// @[toc_entry, ...]: array - an json array to the TOC entry
     ///
     private func onChangeTOC(toc: JsonArray) throws {
-        debug("onChangeTOC",
-            "toc=\(try toc.toString())")
+        self.scene.tableOfContent = toc
     }
 
     ///
@@ -335,7 +332,8 @@ class ViewerBridge {
         debug("onChangePage",
             "chapter=\(chapter)\n"
             + "cfi=\(cfi)\n"
-            + "percentage=\(percentage)")
+            + "percentage=\(percentage)",
+            alert: false)
     }
 
     ///
@@ -347,7 +345,8 @@ class ViewerBridge {
     private func onTrackAction(action: String, cfi: String) throws {
         debug("onTrackAction",
             "action=\(action)\n"
-            + "cfi=\(cfi)")
+            + "cfi=\(cfi)",
+            alert: false)
     }
 
     ///
@@ -357,9 +356,10 @@ class ViewerBridge {
     ///
     private func onToggleToolbar(visible: Bool) throws {
         self.scene.bar.hidden = !visible
-        debug("onToggleToolbar",
-                "visible=|\(visible)|")
     }
+
+    // dummy database
+    private var highlights = [String: JsonObject]()
 
     ///
     /// Request App to load highlights for the chapter, App will call callback in response
@@ -373,9 +373,12 @@ class ViewerBridge {
     ///     and the function must be accessable from global space
     ///
     private func onRequestHighlights(chapter: String, callback: String) throws {
-        debug("onRequestHighlights",
-            "chapter=\(chapter)\n"
-            + "callback=\(callback)")
+        var json = JsonArray()
+        for (_, highlight) in self.highlights {
+            json.append(highlight)
+        }
+
+        eval("\(callback)(\(try json.toString()))")
     }
 
     ///
@@ -391,10 +394,12 @@ class ViewerBridge {
     ///     and the function must be accessable from global space
     ///
     private func onAddHighlight(chapter: String, highlight: JsonObject, callback: String) throws {
-        debug("onAddHighlight",
-            "chapter=\(chapter)\n"
-            + "highlight=|\(try highlight.toString())|\n"
-            + "callback=\(callback)")
+        var highlight = highlight
+        let uuid = NSUUID().UUIDString
+        highlight["uuid"] = uuid
+        self.highlights[uuid] = highlight
+        
+        eval("\(callback)(\"\(uuid)\")")
     }
 
     ///
@@ -403,8 +408,8 @@ class ViewerBridge {
     /// @highlight - an json object to represent highlight
     ///
     private func onUpdateHighlight(highlight: JsonObject) throws {
-        debug("onUpdateHighlight",
-                "highlight=|\(try highlight.toString())|")
+        let uuid = try highlight.getString("uuid")
+        self.highlights[uuid] = highlight
     }
 
     ///
@@ -413,8 +418,7 @@ class ViewerBridge {
     /// @uuid - uuid of the highlight
     ///
     private func onRemoveHighlight(uuid: String) throws {
-        debug("onRemoveHighlight",
-                "uuid=|\(uuid)|")
+        self.highlights.removeValueForKey(uuid)
     }
 
     ///
@@ -437,6 +441,9 @@ class ViewerBridge {
                 "uuid=|\(uuid)|")
     }
 
+    // dummy database
+    private var bookmarks = [String: JsonObject]()
+
     ///
     /// Request App to load bookmark for the chapter, App will call callback in response
     /// The callback will receive an array of json object to represent bookmarks
@@ -449,9 +456,12 @@ class ViewerBridge {
     ///     and the function must be accessable from global space
     ///
     private func onRequestBookmarks(chapter: String, callback: String) throws {
-        debug("onRequestBookmarks",
-                "chapter=|\(chapter)|\n"
-                + "callback=|\(callback)|")
+        var json = JsonArray()
+        for (_, bookmark) in self.bookmarks {
+            json.append(bookmark)
+        }
+
+        eval("\(callback)(\(try json.toString()))")
     }
 
     ///
@@ -467,10 +477,12 @@ class ViewerBridge {
     ///     and the function must be accessable from global space
     ///
     private func onAddBookmark(chapter: String, bookmark: JsonObject, callback: String) throws {
-        debug("onAddBookmark",
-                "chapter=|\(chapter)|\n"
-                + "bookmark=|\(try bookmark.toString())|\n"
-                + "callback=|\(callback)|")
+        var bookmark = bookmark
+        let uuid = NSUUID().UUIDString
+        bookmark["uuid"] = uuid
+        self.bookmarks[uuid] = bookmark
+        
+        eval("\(callback)(\"\(uuid)\")")
     }
 
     ///
@@ -479,8 +491,8 @@ class ViewerBridge {
     /// @bookmark - an json object to represent bookmark
     ///
     private func onUpdateBookmark(bookmark: JsonObject) throws {
-        debug("onUpdateBookmark",
-                "bookmark=|\(try bookmark.toString())|")
+        let uuid = try bookmark.getString("uuid")
+        self.bookmarks[uuid] = bookmark
     }
 
     ///
@@ -489,8 +501,7 @@ class ViewerBridge {
     /// @uuid - uuid of the bookmark
     ///
     private func onRemoveBookmark(uuid: String) throws {
-        debug("onRemoveBookmark",
-                "uuid=|\(uuid)|")
+        self.bookmarks.removeValueForKey(uuid)
     }
 
     ///
@@ -507,10 +518,12 @@ class ViewerBridge {
     }
     
     /// for debugging only
-    private func debug(title: String, _ message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-        self.scene.presentViewController(alertController, animated: true, completion: nil)
+    private func debug(title: String, _ message: String, alert: Bool = true) {
+        if alert {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+            self.scene.presentViewController(alertController, animated: true, completion: nil)
+        }
         
         NSLog("Callback %@: %@", title, message)
     }

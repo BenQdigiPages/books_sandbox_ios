@@ -19,6 +19,7 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
     
     var viewerUrl: NSURL!
     var bridge: ViewerBridge!
+    var tableOfContent: JsonArray?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,11 +54,83 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
     }
 
     @IBAction func onTapTOC(sender: AnyObject) {
+        let popup = PopoverMenu()
+        
+        if let toc = self.tableOfContent {
+            for i in 0 ..< toc.count {
+                if i > 7 {
+                    popup.addItem("Too many to show...")
+                    break
+                }
+                
+                let item = try! toc.getObject(i)
+                var title = item.optString("title") ?? "[unknown]"
+                let level = item.optInt("level") ?? 0
+                let cfi = item.optString("cfi")
+                
+                if level > 0 {
+                    title = String(count: level, repeatedValue: Character("-")) + title
+                }
+                
+                if let cfi = cfi {
+                    popup.addItem(title) {
+                        self.bridge.gotoLink(cfi)
+                    }
+                } else {
+                    popup.addItem(title)
+                }
+            }
+        } else {
+            popup.addItem("No table of content")
+        }
+
+        popup.show(from: self, anchor: sender)
     }
     
     @IBAction func onTapOptions(sender: AnyObject) {
+        let layout = self.bridge.getLayoutMode()!
+        
+        PopoverMenu()
+            .addItem("Font scale +25%") {
+                let scale = min((self.bridge.getFontScale() ?? 1.0) + 0.25, 4)
+                self.bridge.setFontScale(scale)
+            }
+            .addItem("Font scale -25%") {
+                let scale = max((self.bridge.getFontScale() ?? 1.0) - 0.25, 0.25)
+                self.bridge.setFontScale(scale)
+            }
+            .addItem("background: [128, 128, 128]") {
+                self.bridge.setBackgroundColor(UIColor(r: 128, g: 128, b: 128))
+            }
+            .addItem("background: [255, 255, 255]") {
+                self.bridge.setBackgroundColor(UIColor(r: 255, g: 255, b: 255))
+            }
+            .addItem("mode: single", checked: layout == .Single) {
+                self.bridge.setLayoutMode(.Single)
+            }
+            .addItem("mode: side_y_side", checked: layout == .SideBySide) {
+                self.bridge.setLayoutMode(.SideBySide)
+            }
+            .addItem("mode: continuous", checked: layout == .Continuous) {
+                self.bridge.setLayoutMode(.Continuous)
+            }
+            .show(from: self, anchor: sender)
     }
     
     @IBAction func onTapBookmark(sender: AnyObject) {
+        PopoverMenu()
+            .addItem("[255, 0, 0]") {
+                self.bridge.toggleBookmark(UIColor(r: 255, g: 0, b: 0))
+            }
+            .addItem("[0, 255, 0]") {
+                self.bridge.toggleBookmark(UIColor(r: 0, g: 255, b: 0))
+            }
+            .addItem("[0, 0, 255]") {
+                self.bridge.toggleBookmark(UIColor(r: 0, g: 0, b: 255))
+            }
+            .addItem("Remove") {
+                self.bridge.toggleBookmark(nil)
+            }
+            .show(from: self, anchor: sender)
     }
 }
