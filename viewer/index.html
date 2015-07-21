@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        button, button.btn, a.btn {
+            broder: 0;
+            background: #CCC;
+            color: #666;
+            padding: 10px 15px;
+        }
+        button:hover, button.btn:hover, a.btn:hover,
+        button:focus, button.btn:focus, a.btn:focus {
+            background: #EEE;
+        }
+    </style>
+
+    <script src="viewer.js"></script>
+</head>
+
+<body>
+    <h1>Viewer Sandbox</h1>
+    <button onclick="App.onToggleToolbar(true)">Show toolbar</button><br>
+    <button onclick="App.onToggleToolbar(false)">Hide toolbar</button><br>
+    <button onclick="App.onChangeTitle('測試標題')">修改標題為「測試標題」</button><br>
+    
+    <h1><a href="http://fake.benqguru.com/book/OPS/cover.xhtml">Show Cover</a></h1>
+</body>
+
+</html>
