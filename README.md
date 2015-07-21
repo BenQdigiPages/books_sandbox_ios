@@ -3,7 +3,7 @@ books_app_viewer_sandbox
 
 Proof of concept app for iOS viewer
 
-+ Require Xcode 7 (beta)
++ Require Xcode 7 (beta 3 or later)
 + Written in swift
 + Xcode 7 beta does not support iOS 8.4, use iOS 8.3 or 9.0 beta instead
 + Or you try the following workaround
