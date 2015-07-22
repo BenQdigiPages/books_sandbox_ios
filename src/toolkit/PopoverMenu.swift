@@ -153,7 +153,6 @@ private class PopoverMenuController : UIViewController, UIPopoverPresentationCon
         var checkmarkImage: UIImage?
         if hasChecked {
             checkmarkImage = UIImage(named: "mark_checked")
-            checkmarkImage = checkmarkImage!.imageWithRenderingMode(.AlwaysTemplate)
             maxItemWidth += options.iconGap + checkmarkImage!.size.width
         }
 

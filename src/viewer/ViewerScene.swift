@@ -17,6 +17,7 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
     @IBOutlet weak var barTitle: UILabel!
     @IBOutlet weak var webView: UIWebView!
     
+    var bookUrl: NSURL! = NSURL(string: "http://fake.benqguru.com/book/")
     var viewerUrl: NSURL!
     var bridge: ViewerBridge!
     var tableOfContent: JsonArray?
@@ -33,14 +34,16 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
                 
         self.viewerUrl = NSBundle.mainBundle().URLForResource("index", withExtension: "html", subdirectory: "viewer")!
         self.webView.loadRequest(NSURLRequest(URL: self.viewerUrl))
-
-        let uri = "http://fake.benqguru.com/book/"
-        ViewerURL = NSURL(string: uri)
-        self.bridge.loadBook(uri)
     }
 
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+  
+    func loadBook(url: NSURL) {
+        self.bookUrl = url
+        ViewerURL = url
+        self.bridge.loadBook(url.absoluteString)
     }
   
     func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
@@ -50,6 +53,7 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
     func webViewDidFinishLoad(webView: UIWebView) {
         if webView.request?.URL == self.viewerUrl {
             self.bridge.bindCallbacks()
+            loadBook(self.bookUrl)
         }
     }
 
@@ -69,7 +73,7 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
                 let cfi = item.optString("cfi")
                 
                 if level > 0 {
-                    title = String(count: level, repeatedValue: Character("-")) + title
+                    title = String(count: level * 4, repeatedValue: Character(" ")) + title
                 }
                 
                 if let cfi = cfi {

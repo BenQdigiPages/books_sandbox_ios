@@ -97,7 +97,7 @@ class ViewerBridge {
                 NSLog("Log %@", args.optString(0) ?? "")
 
             default:
-                NSLog("ViewerBridge: unknown [%@]", url)
+                NSLog("ViewerBridge: unknown method %@ = %@", url.host!, url)
             }
         } catch let error {
             NSLog("ViewerBridge: [%@] error=%@", url, error as NSError)
@@ -359,7 +359,7 @@ class ViewerBridge {
     }
 
     // dummy database
-    private var highlights = [String: JsonObject]()
+    private var highlights = [String: (String, JsonObject)]()
 
     ///
     /// Request App to load highlights for the chapter, App will call callback in response
@@ -374,8 +374,10 @@ class ViewerBridge {
     ///
     private func onRequestHighlights(chapter: String, callback: String) throws {
         var json = JsonArray()
-        for (_, highlight) in self.highlights {
-            json.append(highlight)
+        for (_, (highlight_chapter, highlight)) in self.highlights {
+            if highlight_chapter == chapter {
+                json.append(highlight)
+            }
         }
 
         eval("\(callback)(\(try json.toString()))")
@@ -397,7 +399,7 @@ class ViewerBridge {
         var highlight = highlight
         let uuid = NSUUID().UUIDString
         highlight["uuid"] = uuid
-        self.highlights[uuid] = highlight
+        self.highlights[uuid] = (chapter, highlight)
         
         eval("\(callback)(\"\(uuid)\")")
     }
@@ -409,7 +411,9 @@ class ViewerBridge {
     ///
     private func onUpdateHighlight(highlight: JsonObject) throws {
         let uuid = try highlight.getString("uuid")
-        self.highlights[uuid] = highlight
+        if let (chapter, _) = self.highlights[uuid] {
+            self.highlights[uuid] = (chapter, highlight)
+        }
     }
 
     ///
@@ -442,7 +446,7 @@ class ViewerBridge {
     }
 
     // dummy database
-    private var bookmarks = [String: JsonObject]()
+    private var bookmarks = [String: (String, JsonObject)]()
 
     ///
     /// Request App to load bookmark for the chapter, App will call callback in response
@@ -457,8 +461,10 @@ class ViewerBridge {
     ///
     private func onRequestBookmarks(chapter: String, callback: String) throws {
         var json = JsonArray()
-        for (_, bookmark) in self.bookmarks {
-            json.append(bookmark)
+        for (_, (bookmark_chapter, bookmark)) in self.bookmarks {
+            if bookmark_chapter == chapter {
+                json.append(bookmark)
+            }
         }
 
         eval("\(callback)(\(try json.toString()))")
@@ -480,7 +486,7 @@ class ViewerBridge {
         var bookmark = bookmark
         let uuid = NSUUID().UUIDString
         bookmark["uuid"] = uuid
-        self.bookmarks[uuid] = bookmark
+        self.bookmarks[uuid] = (chapter, bookmark)
         
         eval("\(callback)(\"\(uuid)\")")
     }
@@ -492,7 +498,9 @@ class ViewerBridge {
     ///
     private func onUpdateBookmark(bookmark: JsonObject) throws {
         let uuid = try bookmark.getString("uuid")
-        self.bookmarks[uuid] = bookmark
+        if let (chapter, _) = self.bookmarks[uuid] {
+            self.bookmarks[uuid] = (chapter, bookmark)
+        }
     }
 
     ///
@@ -521,7 +529,7 @@ class ViewerBridge {
     private func debug(title: String, _ message: String, alert: Bool = true) {
         if alert {
             let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+            alertController.addAction(UIAlertAction(title: "SEE!", style: .Cancel, handler: nil))
             self.scene.presentViewController(alertController, animated: true, completion: nil)
         }
         

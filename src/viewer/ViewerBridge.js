@@ -14,7 +14,8 @@ var App = {}
 
 App.callback = function(name, args) {
     var iframe = document.createElement('iframe');
-    iframe.setAttribute('src', 'app://' + name + '?' + JSON.stringify(args));
+    var json = JSON.stringify(args).replace(/#/g, '%23');
+    iframe.setAttribute('src', 'app://' + name + '?' + json);
     document.documentElement.appendChild(iframe);
     iframe.parentNode.removeChild(iframe);
     iframe = null;

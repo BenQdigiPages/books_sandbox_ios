@@ -8,7 +8,7 @@ var Viewer = {}
 /// @url: string - base url of ebook
 ///
 Viewer.loadBook = function(url) {
-
+//    window.alert("Viewer.loadBook=" + url)
 }
 
 ///
