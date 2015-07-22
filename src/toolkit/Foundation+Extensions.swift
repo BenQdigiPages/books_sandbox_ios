@@ -62,48 +62,6 @@ public func synchronized<T>(lock: NSLocking, @noescape _ block: () throws -> T) 
 }
 
 //---------------------------------------------------------------------------
-// MARK: - Dispatch utils
-
-public enum dispatch_queue_id {
-    case Default
-    case High
-    case Low
-    case Background
-    case Main
-}
-
-public func dispatch_queue(id: dispatch_queue_id) -> dispatch_queue_t {
-    switch (id) {
-    case .Default:
-        return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-    case .High:
-        return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
-    case .Low:
-        return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
-    case .Background:
-        return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
-    case .Main:
-        return dispatch_get_main_queue()
-    }
-}
-
-public func dispatch_async(id: dispatch_queue_id = .Default, _ block: dispatch_block_t) {
-    dispatch_async(dispatch_queue(id), block)
-}
-
-public func dispatch_sync(id: dispatch_queue_id = .Default, _ block: dispatch_block_t) {
-    dispatch_sync(dispatch_queue(id), block)
-}
-
-public func dispatch_later(delta: Int64, _ id: dispatch_queue_id = .Default, _ block: dispatch_block_t) {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_queue(id), block)
-}
-
-public func dispatch_after(time: dispatch_time_t, _ id: dispatch_queue_id = .Default, _ block: dispatch_block_t) {
-    dispatch_after(time, dispatch_queue(id), block)
-}
-
-//---------------------------------------------------------------------------
 // MARK: - String utils
 
 public extension String {

@@ -398,9 +398,6 @@ private func normalizeValue(value: Any) -> AnyObject {
 
 public struct JsonObject : JsonConvertible,
         Swift.DictionaryLiteralConvertible, Swift.Printable, Swift.DebugPrintable {
-    typealias JsonIndex = String
-    typealias JsonValue = [String: AnyObject]
-
     private var _map: [String: AnyObject]
 
     public var value: [String: AnyObject] {
@@ -471,9 +468,6 @@ public struct JsonObject : JsonConvertible,
 
 public struct JsonArray : JsonConvertible,
         Swift.ArrayLiteralConvertible, Swift.Printable, Swift.DebugPrintable {
-    typealias JsonIndex = Int
-    typealias JsonValue = [AnyObject]
-
     private var _list: [AnyObject]
 
     public var value: [AnyObject] {
