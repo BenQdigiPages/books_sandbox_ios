@@ -42,7 +42,7 @@ class ViewerBridge {
         
         do {
             let json = url.query?.stringByRemovingPercentEncoding
-            let args: JsonArray = try JsonArray(string: json ?? "[]")
+            let args = try JsonArray(string: json ?? "[]")
             
             switch url.host! {
             case "onChangeTitle":
