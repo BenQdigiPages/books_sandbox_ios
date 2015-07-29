@@ -79,10 +79,11 @@ Viewer.setLayoutMode = function(mode) {
 ///
 /// @chapter: string - an opaque to represent current chapter
 /// @cfi: string - epub cfi
-/// @percentage: 0..100 - to represent reading progress
+/// @current_page: int - page number of current page
+/// @total_pages: int - total number of pages
 ///
 Viewer.getCurrentPosition = function() {
-    return ["ooxx", "oooxxx", 90]
+    return ["ooxx", "oooxxx", 1, 100]
 }
 
 ///

@@ -50,7 +50,10 @@ class ViewerBridge {
                 
             case "onChangeTOC":
                 try onChangeTOC(try args.getArray(0))
-                
+        
+            case "onChangeView":
+                try onChangeView(try args.getDouble(0), try args.getDouble(1), scale: try args.getDouble(2))
+
             case "onChangePage":
                 try onChangePage(try args.getString(0), cfi: try args.getString(1), percentage: try args.getInt(2))
                 
@@ -230,16 +233,18 @@ class ViewerBridge {
     ///
     /// @chapter: string - an opaque to represent current chapter
     /// @cfi: string - epub cfi
-    /// @percentage: 0..100 - to represent reading progress
+    /// @current_page: int - page number of current page
+    /// @total_pages: int - total number of pages
     ///
-    func getCurrentPosition() -> (chapter: String, cfi: String, percentage: Int)? {
+    func getCurrentPosition() -> (chapter: String, cfi: String, current: Int, total: Int)? {
         if let result = eval("JSON.stringify(Viewer.getCurrentPosition())") {
             do {
                 let json = try JsonArray(string: result)
                 let chapter = try json.getString(0)
                 let cfi = try json.getString(1)
-                let percentage = try json.getInt(2)
-                return (chapter: chapter, cfi: cfi, percentage: percentage)
+                let current = try json.getInt(2)
+                let total = try json.getInt(3)
+                return (chapter: chapter, cfi: cfi, current: current, total: total)
             } catch let error {
                 NSLog("ViewerBridge: getCurrentPosition() error=%@", error as NSError)
             }
@@ -319,6 +324,21 @@ class ViewerBridge {
     ///
     private func onChangeTOC(toc: JsonArray) throws {
         self.scene.tableOfContent = toc
+    }
+
+    ///
+    /// Notify App current view frame is changed
+    /// This is needed for PDF annotation
+    /// Content offset is the relative position (after scaling) to the top-left corner.
+    /// Content offset (x: -10, y: -20) will make top edge 20 pixels off-screen,
+    /// left edge 10 pixels off-screen
+    ///
+    /// @offset_x: number - content offset x
+    /// @offset_y: number - content offset y
+    /// @scale: number - scale of content view, 1.0 is original size
+    ///
+    private func onChangeView(offset_x: Double, _ offset_y: Double, scale: Double) throws {
+        // do view synchronizing
     }
 
     ///

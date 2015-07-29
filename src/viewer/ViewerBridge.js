@@ -40,14 +40,30 @@ App.onChangeTOC = function(toc_entry_array) {
 }
 
 ///
+/// Notify App current view frame is changed
+/// This is needed for PDF annotation
+/// Content offset is the relative position (after scaling) to the top-left corner.
+/// Content offset (x: -10, y: -20) will make top edge 20 pixels off-screen,
+/// left edge 10 pixels off-screen
+///
+/// @offset_x: number - content offset x
+/// @offset_y: number - content offset y
+/// @scale: number - scale of content view, 1.0 is original size
+///
+App.onChangeView = function(offset_x, offset_y, scale) {
+    this.callback("onChangeView", [offset_x, offset_y, scale]);
+}
+
+///
 /// Notify App current page is changed to different page
 ///
 /// @chapter: string - an opaque to represent current chapter
 /// @cfi: string - epub cfi
-/// @percentage: 0..100 - to represent reading progress
+/// @current_page: int - page number of current page
+/// @total_pages: int - total number of pages
 ///
-App.onChangePage = function(chapter, cfi, percentage) {
-    this.callback("onChangePage", [chapter, cfi, percentage]);
+App.onChangePage = function(chapter, cfi, current_page, total_pages) {
+    this.callback("onChangePage", [chapter, cfi, current_page, total_pages]);
 }
 
 ///
