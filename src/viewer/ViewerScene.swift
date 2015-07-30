@@ -112,7 +112,7 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
             .addItem("Mode: single", checked: layout == .Single) {
                 self.bridge.setLayoutMode(.Single)
             }
-            .addItem("Mode: side_y_side", checked: layout == .SideBySide) {
+            .addItem("Mode: side_by_side", checked: layout == .SideBySide) {
                 self.bridge.setLayoutMode(.SideBySide)
             }
             .addItem("Mode: continuous", checked: layout == .Continuous) {

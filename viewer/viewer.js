@@ -5,9 +5,14 @@ var Viewer = {}
 /// App will act as transparent proxy, and provides offline content
 /// if available
 ///
-/// @url: string - base url of ebook
+/// App may request legacy mode, which can not handle partial GET.
+/// If legacy mode is activated, Viewer should put "Range" header in
+/// query parameter "_Range_", and issue normal HTTP GET request.
 ///
-Viewer.loadBook = function(url) {
+/// @url: string - base url of ebook
+/// @legacy: bool - true if legecy mode is needed
+///
+Viewer.loadBook = function(url, legacy) {
 //    window.alert("Viewer.loadBook=" + url)
 }
 
