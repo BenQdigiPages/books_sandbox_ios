@@ -336,7 +336,7 @@ public extension JsonConvertible {
 
     public func toString(options: NSJSONWritingOptions = .PrettyPrinted) throws -> String {
         let data = try toData(options)
-        return NSString(data: data, encoding: NSUTF8StringEncoding)! as String
+        return String(data: data, encoding: NSUTF8StringEncoding)
     }
 }
 

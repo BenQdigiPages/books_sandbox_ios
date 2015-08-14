@@ -70,15 +70,15 @@ class ViewerScene : UIViewController, UIWebViewDelegate {
                 let item = try! toc.getObject(i)
                 var title = item.optString("title") ?? "[unknown]"
                 let level = item.optInt("level") ?? 0
-                let cfi = item.optString("cfi")
+                let link = item.optString("link")
                 
                 if level > 0 {
                     title = String(count: level * 4, repeatedValue: Character(" ")) + title
                 }
                 
-                if let cfi = cfi {
+                if let link = link {
                     popup.addItem(title) {
-                        self.bridge.gotoLink(cfi)
+                        self.bridge.gotoLink(link)
                     }
                 } else {
                     popup.addItem(title)
